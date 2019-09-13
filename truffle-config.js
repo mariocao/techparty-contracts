@@ -1,3 +1,4 @@
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -17,6 +18,14 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+
+var HDWalletProvider = require("truffle-hdwallet-provider")
+
+const fs = require("fs")
+let secrets
+if (fs.existsSync(".secret")) {
+ secrets = JSON.parse(fs.readFileSync(".secret", "utf8"))
+}
 
 module.exports = {
   /**
@@ -40,10 +49,12 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
     rinkeby: {
+      provider: function () {
+        return new HDWalletProvider(secrets.mnemonics, `https://rinkeby.infura.io/v3/${secrets.infuraApiKey}`)
+      },
       network_id: 4,
-      host: "localhost",
-      port: 9004,
-      gas: 6500000,
+      gas: 4500000,
+      gasPrice: 10000000000,
     },
     ropsten: {
       network_id: 3,
