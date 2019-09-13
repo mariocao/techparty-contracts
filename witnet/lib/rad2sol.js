@@ -132,11 +132,12 @@ function execute (code, requestName) {
   })
 
   try {
-    let x = vm.runInContext(code, context, __dirname).asJson(1, 1, 1, 1, 1)
-    x.backup_witnesses = 1
-    x.value = 3600
-    x.time_lock = x.data_request.notBefore
-    x.data_request.notBefore = 0
+    let x = vm.runInContext(code, context, __dirname).asJson()
+    x.time_lock = x.data_request.not_before
+    // x.backup_witnesses = 1
+    // x.value = 3600
+    // x.time_lock = x.data_request.notBefore
+    // x.data_request.notBefore = 0
     //x = JSON.parse('{"data_request":{"not_before":0,"retrieve":[{"kind":0,"url":"https://www.sofascore.com/event/8397714/json","script":[137,24,69,24,116,130,24,97,101,101,118,101,110,116,24,116,130,24,97,105,104,111,109,101,83,99,111,114,101,24,116,130,24,97,103,99,117,114,114,101,110,116,24,114,24,60]}],"aggregate":{"script":[128]},"tally":{"script":[128]},"deliver":[]},"value":3600,"witnesses":1,"backup_witnesses":0,"commit_fee":0,"reveal_fee":0,"tally_fee":0,"time_lock":1568284783}')
     console.log(JSON.stringify(x))
     return x
