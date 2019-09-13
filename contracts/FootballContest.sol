@@ -27,8 +27,11 @@ contract FootballContest is UsingWitnet {
     owner = msg.sender;
   }
 
-  function initialize(uint256 _requestFee, uint256 _resultFee) public payable {
-    require(msg.sender == owner, "You must be the owner to call initialize");
+  function getContestants(uint8 winner) public view returns (Contestant[] memory) {
+    return contestants[winner];
+  }
+
+  function initialize(uint256 _requestFee, uint256 _resultFee) public payable isOwner {
     require(footballHomeRequestId == 0, "Home request was already initialized");
     require(footballAwayRequestId == 0, "Away request was already initialized");
 
@@ -40,12 +43,13 @@ contract FootballContest is UsingWitnet {
   }
 
   // Winner is defined as: 0 draw, 1 home, 2 away
-  function participate(uint8 winner) public payable witnetRequestAccepted(footballHomeRequestId) witnetRequestAccepted(footballAwayRequestId){
+  function participate(uint8 winner) public payable witnetRequestAccepted(footballHomeRequestId) witnetRequestAccepted(footballAwayRequestId) isOwner {
     contestants[winner].push(Contestant(msg.sender, msg.value));
     grandPrice = grandPrice + msg.value;
   }
 
   function resolve() public {
+    require(msg.sender == owner, "You must be the owner to call initialize");
     require(!isResolved, "The contest is already resovled");
 
     actualHome = witnetReadResult(footballHomeRequestId).asInt128();
@@ -87,6 +91,11 @@ contract FootballContest is UsingWitnet {
 
   modifier before(uint256 _timestamp) {
     require(block.timestamp < _timestamp, "The participation window is over");
+    _;
+  }
+
+  modifier isOwner() {
+    require(msg.sender == owner, "You must be the owner to call initialize");
     _;
   }
 }
