@@ -43,12 +43,12 @@ contract FootballContest is UsingWitnet {
   }
 
   // Winner is defined as: 0 draw, 1 home, 2 away
-  function participate(uint8 winner) public payable witnetRequestAccepted(footballHomeRequestId) witnetRequestAccepted(footballAwayRequestId) isOwner {
+  function participate(uint8 winner) public payable witnetRequestAccepted(footballHomeRequestId) witnetRequestAccepted(footballAwayRequestId) {
     contestants[winner].push(Contestant(msg.sender, msg.value));
     grandPrice = grandPrice + msg.value;
   }
 
-  function resolve() public {
+  function resolve() public isOwner {
     require(msg.sender == owner, "You must be the owner to call initialize");
     require(!isResolved, "The contest is already resovled");
 
@@ -95,7 +95,7 @@ contract FootballContest is UsingWitnet {
   }
 
   modifier isOwner() {
-    require(msg.sender == owner, "You must be the owner to call initialize");
+    require(msg.sender == owner, "You must be the owner to call initialize or resolve");
     _;
   }
 }
