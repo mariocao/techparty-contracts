@@ -44,13 +44,14 @@ contract FootballContest is UsingWitnet {
 
   // Winner is defined as: 0 draw, 1 home, 2 away
   function participate(uint8 winner) public payable witnetRequestAccepted(footballHomeRequestId) witnetRequestAccepted(footballAwayRequestId) {
+    require(!isResolved, "The contest is already resolved");
     contestants[winner].push(Contestant(msg.sender, msg.value));
     grandPrice = grandPrice + msg.value;
   }
 
   function resolve() public isOwner {
     require(msg.sender == owner, "You must be the owner to call initialize");
-    require(!isResolved, "The contest is already resovled");
+    require(!isResolved, "The contest is already resolved");
 
     actualHome = witnetReadResult(footballHomeRequestId).asInt128();
     actualAway = witnetReadResult(footballAwayRequestId).asInt128();
